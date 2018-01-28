@@ -17,7 +17,7 @@
         "doctrine/annotations": "v1.4.0",
         "php-di/php-di": "*",
         "php-di/slim-bridge": "*",
-        "phramz/doctrine-annotation-scanner": "dev-master",
+        "phramz/doctrine-annotation-scanner": "1.0.1",
         "doctrine/common": "*"
     },
     "autoload": {

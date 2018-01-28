@@ -16,7 +16,7 @@ require_once( __DIR__ . '/Annotations/RoutePrefix.php');
 class AnnotationRouteMapper {
 
     /**
-     * Primary static metod to parse controller files in the given folders and
+     * Primary static method to parse controller files in the given folders and
      * add them to the Slim application
      */
     public static function loadAnnotations($folderPaths, $app, $cacheFile = false) {
@@ -42,7 +42,10 @@ class AnnotationRouteMapper {
 
         for ($idx = 0; $idx < sizeof($routeMapInfo); $idx++) {
             $routeMap = $routeMapInfo[$idx];
-            $app->map([$routeMap->Method], $routeMap->Route, [$routeMap->NameSpace, $routeMap->MethodName]);
+            $route = $app->map([$routeMap->Method], $routeMap->Route, [$routeMap->NameSpace, $routeMap->MethodName]);
+            if (isset($routeMap->Middleware) && ($routeMap->Middleware != "")) {
+                $route->add($routeMap->Middleware);
+            }
         }
     }
     
@@ -71,6 +74,7 @@ class AnnotationRouteMapper {
                 $routeMap->Route = AnnotationRouteMapper::prepareRoutePath($routePrefix, $methodAnnotation->path);
                 $routeMap->NameSpace = $nameSpace;
                 $routeMap->MethodName = $methodAnnotation->name;
+                $routeMap->Middleware = $methodAnnotation->middleware;
                 
                 array_push($routeMapInfo, $routeMap);
             }

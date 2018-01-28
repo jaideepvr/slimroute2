@@ -15,5 +15,7 @@ class Route {
     public $method;
     
     public $name;
+    
+    public $middleware;
 
 }
