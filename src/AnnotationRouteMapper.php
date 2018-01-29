@@ -1,7 +1,8 @@
 <?php
 
 namespace Gvs\SlimRoute2;
-    
+
+use Doctrine\Common\Annotations as Annotations;    
 use Doctrine\Common\Annotations\AnnotationReader;
 use Phramz\Doctrine\Annotation\Scanner\ClassFileInfo;
 use Phramz\Doctrine\Annotation\Scanner\Scanner;
@@ -63,7 +64,7 @@ class AnnotationRouteMapper {
             $nameSpace = $classAnnotation->nameSpace;
         }
         
-        foreach ($file->getMethodAnnotations() as $methodAnnotations) {
+        foreach ($file->getMethodAnnotations() as $methodName => $methodAnnotations) {
             if (sizeof($methodAnnotations) == 0) {
                 continue;
             }
@@ -73,7 +74,7 @@ class AnnotationRouteMapper {
                 $routeMap->Method = $methodAnnotation->method;
                 $routeMap->Route = AnnotationRouteMapper::prepareRoutePath($routePrefix, $methodAnnotation->path);
                 $routeMap->NameSpace = $nameSpace;
-                $routeMap->MethodName = $methodAnnotation->name;
+                $routeMap->MethodName = isset($methodAnnotation->name) ? $methodAnnotation->name : $methodName;
                 $routeMap->Middleware = $methodAnnotation->middleware;
                 
                 array_push($routeMapInfo, $routeMap);
@@ -110,15 +111,17 @@ class AnnotationRouteMapper {
             RoutePrefix::class
         ];
         $routeMapInfo = [];
+        $parser = new Annotations\DocParser();
+        $parser->setIgnoreNotImportedAnnotations(true);
 
         foreach($folderPaths as $folderPath) {
-            $reader = new AnnotationReader(); // get an instance of the doctrine annotation reader
+            $reader = new AnnotationReader($parser); // get an instance of the doctrine annotation reader
             $scanner = new Scanner($reader);
 
             $scanner->scan($annotations)->in($folderPath);
 
             foreach ($scanner as $file) {
-                $mapInfo = AnnotationRouteMapper::scanfile($file);
+                $mapInfo = AnnotationRouteMapper::scanFile($file);
                 $routeMapInfo = array_merge($routeMapInfo, $mapInfo);
             }
         }
