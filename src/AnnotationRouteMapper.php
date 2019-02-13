@@ -89,7 +89,7 @@ class AnnotationRouteMapper {
      */
     private static function prepareRoutePath($prefix, $givenPath) {
         if ($givenPath[0] == '/') {
-            $path = $prefix;
+            $path = $$givenPath;
         } else {
             $lastChar = substr($prefix, -1);
             
